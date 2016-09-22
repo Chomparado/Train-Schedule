@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Train Data</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-2.2.1.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+	<script src="https://www.gstatic.com/firebasejs/live/3.0/firebase.js"></script>
+	<script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
+
+
+
+</head>
+<body>
+
+
+<div class="container">
+
+<div class="jumbotron" >
+	<h1 class="text-center">Train Schedule</h1>
+</div>
+	<div class="row">
+		<div class="col-md-12">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title"><strong>Current Train Schedule</strong></h3>
+				</div>
+				<div class="panel-body">
+					<table class="table table-hover" id='trainTable'>
+						<thead>
+							<tr>
+								<th>Train Name</th>
+								<th>Destination</th>
+								<th>Frequency (min)</th>
+								<th>Next Arrival</th>
+								<th>Minutes Away</th>								
+							</tr>
+						</thead>
+						<tbody id="trainTable">
+							
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title"><strong>Add Train</strong></h3>
+				</div>
+				<div class="panel-body">
+				<form>
+					<div class="form-group">
+						<label for="">Train Name</label>
+						<input type="text" class="form-control" id="nameInput">
+					</div>
+					<div class="form-group">
+						<label for="">Destination</label>
+						<input type="text" class="form-control" id="destinationInput">
+					</div>
+					<div class="form-group">
+						<label for="">First Train Time (HH:mm - Military Time)</label>
+						<input type="text" class="form-control" id="firstTrainInput">
+					</div>
+					<div class="form-group">
+						<label for="">Frequency (min)</label>
+						<input type="text" class="form-control" id="frequencyInput">
+					</div>
+					<button type="submit" class="btn btn-primary" id="addTrainBtn">Submit</button>
+
+				</form>
+				</div>
+			</div>
+
+		</div>
+	</div>
+</div>
+
+
+
+<script src="https://www.gstatic.com/firebasejs/3.4.0/firebase.js"></script>
+<script>
+
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyAO1DO_7PMGavFOdwsfgMMp1b_ykMggO98",
+    authDomain: "meme-employees.firebaseapp.com",
+    databaseURL: "https://meme-employees.firebaseio.com",
+    storageBucket: "",
+    messagingSenderId: "593456157152"
+  };
+
+  firebase.initializeApp(config);
+
+	var database = firebase.database();
+
+
+$("#addTrainBtn").on("click", function(){
+
+	var trainName = $("#nameInput").val();
+	var destination = $("#destinationInput").val();
+	var startTime = $("#firstTrainInput").val();
+	var frequency = $("#frequencyInput").val();
+
+
+	database.ref().push({
+		name:  trainName,
+		destination: destination,
+		startTime: startTime,
+		frequency: frequency,
+
+
+	});
+
+
+    $("#nameInput").val("");
+    $("#destinationInput").val("");
+    $("#firstTrainInput").val("");
+    $("#frequencyInput").val("");
+
+	console.log(trainName);
+	console.log(destination);
+	console.log(startTime);
+	console.log(frequency);
+
+return false;
+});
+
+
+database.ref().on("child_added", function(childSnapshot) {
+
+
+		$('#trainTable').append( $('<tr class="tableRemove '+ childSnapshot.val().name + '"></tr>'));
+
+		$('.' + childSnapshot.val().name).append('<td class="tableRemove">' + childSnapshot.val().name + '</td>');
+
+		$('.' + childSnapshot.val().name).append('<td class="tableRemove">' + childSnapshot.val().destination + '</td>');
+
+		$('.' + childSnapshot.val().name).append('<td class="tableRemove">' + childSnapshot.val().frequency + '</td>');
+
+		$('.' + childSnapshot.val().name).append('<td class="tableRemove">' + "Soon!" + '</td>');
+
+		$('.' + childSnapshot.val().name).append('<td class="tableRemove">' + "Even Sooner!" + '</td>');
+
+
+	}, function(errorObject) {
+
+	console.log("Errors handled: " + errorObject.code);
+	});
+
+
+// database.ref().orderByChild("dateAdded").limitToLast(1).on("child_added", function(snapshot){
+//     // Change the HTML to reflect
+//     $("#namedisplay").html(snapshot.val().name);
+//     $("#emaildisplay").html(snapshot.val().role);
+//     $("#agedisplay").html(snapshot.val().startDate);
+//     $("#commentdisplay").html(snapshot.val().monthlyRate);
+// });
+
+
+
+
+
+
+
+
+
+
+</script>
+
+
+
+</body>
+</html>
